@@ -204,6 +204,12 @@ int main(int argc, char** argv) {
     cudaDeviceProp prop;
     CUDA(cudaGetDeviceProperties(&prop, r));
     ranks[r].scratchBytes = ncclShmemScratchWarpSize(prop.major * 100 + prop.minor * 10) * (kThreads / WARP_SIZE);
+    // sm_90's larger NCCL shared context plus scratch can exceed the default limit.
+    cudaFuncAttributes attributes;
+    CUDA(cudaFuncGetAttributes(&attributes, allreduce_ring_simple));
+    if (attributes.sharedSizeBytes + ranks[r].scratchBytes > prop.sharedMemPerBlock)
+      CUDA(cudaFuncSetAttribute(allreduce_ring_simple, cudaFuncAttributeMaxDynamicSharedMemorySize,
+                                int(ranks[r].scratchBytes)));
     CUDA(cudaMalloc(&ranks[r].input, capacity * sizeof(float)));
     CUDA(cudaMalloc(&ranks[r].output, capacity * sizeof(float)));
   }
