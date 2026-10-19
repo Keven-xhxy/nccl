@@ -44,6 +44,7 @@ struct ProtoSimple {
   static constexpr int MaxGroupWidth = 2;
 };
 
+#if !defined(NCCL_PRIMITIVES_STANDALONE)
 struct ProtoLL {
   static constexpr int Id = NCCL_PROTO_LL;
 
@@ -73,6 +74,8 @@ struct ProtoLL128 {
   // Group width is how many consecutive group values a subchannel occupies.
   static constexpr int MaxGroupWidth = 1;
 };
+
+#endif // !NCCL_PRIMITIVES_STANDALONE
 
 /* Fan (as in fan-in & fan-out) classes hold recv and send counts. The template
  * arguments are static bounds on the maximum values. Asymmetric counts are
@@ -164,6 +167,8 @@ __device__ inline int checkAbort(int& abortCache, const int abortValue, int& spi
 }
 
 #include "prims_simple.h"
+#if !defined(NCCL_PRIMITIVES_STANDALONE)
 #include "prims_ll.h"
 #include "prims_ll128.h"
+#endif
 #endif

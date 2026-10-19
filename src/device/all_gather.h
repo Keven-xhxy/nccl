@@ -88,6 +88,8 @@ __device__ __forceinline__ void runRing(int tid, int nthreads, struct ncclDevWor
 }
 } // namespace
 
+#if !defined(NCCL_PRIMITIVES_STANDALONE)
+
 template <typename T, typename RedOp>
 struct RunWorkColl<ncclFuncAllGather, T, RedOp, NCCL_ALGO_RING, NCCL_PROTO_SIMPLE> {
   __device__ __forceinline__ void run(int tid, int nthreads, struct ncclDevWorkColl* work) {
@@ -584,3 +586,5 @@ struct RunWorkColl<ncclFuncAllGather, T, RedOp, NCCL_ALGO_COLLNET_DIRECT, NCCL_P
     }
   }
 };
+
+#endif // !NCCL_PRIMITIVES_STANDALONE

@@ -569,6 +569,7 @@ __host__ __device__ constexpr int ncclShmemDynamicSize(int cudaArch = NCCL_CUDA_
   return cudaArch < 700 ? 0 : ncclShmemScratchWarpSize(cudaArch) * (NCCL_MAX_NTHREADS / WARP_SIZE);
 }
 
+#if !defined(NCCL_PRIMITIVES_STANDALONE)
 // Host-side table of kernel function pointers.
 extern int const ncclDevKernelCount;
 extern void* ncclDevKernelList[/*ncclDevKernelCount*/];
@@ -667,5 +668,7 @@ inline int ncclDevFuncId(int coll, int devRedOp, int type, int algo, int proto) 
 inline int ncclDevFuncId_P2p() {
   return ncclDevFuncRowToId[0];
 }
+
+#endif // !NCCL_PRIMITIVES_STANDALONE
 
 #endif

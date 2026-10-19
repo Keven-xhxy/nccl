@@ -9,45 +9,51 @@
 #include "collectives.h"
 #include "primitives.h"
 
+namespace {
+template <typename T, typename RedOp, typename Proto>
+__device__ void runSend(int tid, int tn, int group, struct ncclDevWorkP2p* work) {
+  static_assert(sizeof(T) == 1, "SendRecv only works on single byte types T.");
+  size_t bytes = work->sendBytes;
+  bool useLargeChunk = (work->sendIpcReg && ncclShmem.comm.isAllNvlink) || work->sendNetReg;
+  int chunkSize = useLargeChunk ? NCCL_MAX_NET_SIZE : u32fp8Decode(work->sendChunkSize_u32fp8);
+  int stepSize = useLargeChunk ? NCCL_MAX_NET_SIZE : ncclShmem.comm.p2pChunkSize;
+  Primitives<T, RedOp, FanAsymmetric<0, 1>, 1, Proto, 1> prims(tid, tn, nullptr, &work->sendRank, work->sendAddr,
+                                                               nullptr,
+                                                               /*redOpArg(ignored)=*/0, group, 1, 1, nullptr, work,
+                                                               stepSize);
+  size_t cursor = 0;
+  do {
+    int n = min(size_t(chunkSize), bytes - cursor);
+    prims.directSend(cursor, cursor, n);
+    cursor += n;
+  } while (cursor < bytes);
+}
+
+template <typename T, typename RedOp, typename Proto>
+__device__ void runRecv(int tid, int tn, int group, struct ncclDevWorkP2p* work) {
+  static_assert(sizeof(T) == 1, "SendRecv only works on single byte types T.");
+  size_t bytes = work->recvBytes;
+  bool useLargeChunk = (work->recvIpcReg && ncclShmem.comm.isAllNvlink) || work->recvNetReg;
+  int chunkSize = useLargeChunk ? NCCL_MAX_NET_SIZE : u32fp8Decode(work->recvChunkSize_u32fp8);
+  int stepSize = useLargeChunk ? NCCL_MAX_NET_SIZE : ncclShmem.comm.p2pChunkSize;
+  Primitives<T, RedOp, FanAsymmetric<1, 0>, 1, Proto, 1> prims(tid, tn, &work->recvRank, nullptr, nullptr,
+                                                               work->recvAddr,
+                                                               /*redOpArg(ignored)=*/0, group, 1, 1, nullptr, work,
+                                                               stepSize);
+  size_t cursor = 0;
+  do {
+    int n = min(size_t(chunkSize), bytes - cursor);
+    prims.directRecv(cursor, n);
+    cursor += n;
+  } while (cursor < bytes);
+}
+
+} // namespace
+
+#if !defined(NCCL_PRIMITIVES_STANDALONE)
 template <typename T, typename RedOp>
 struct RunWorkBatch<ncclFuncSendRecv, T, RedOp, NCCL_ALGO_RING, NCCL_PROTO_SIMPLE> {
   static_assert(sizeof(T) == 1, "SendRecv only works on single byte types T.");
-
-  template <typename Proto>
-  __device__ void runSend(int tid, int tn, int group, struct ncclDevWorkP2p* work) {
-    size_t bytes = work->sendBytes;
-    bool useLargeChunk = (work->sendIpcReg && ncclShmem.comm.isAllNvlink) || work->sendNetReg;
-    int chunkSize = useLargeChunk ? NCCL_MAX_NET_SIZE : u32fp8Decode(work->sendChunkSize_u32fp8);
-    int stepSize = useLargeChunk ? NCCL_MAX_NET_SIZE : ncclShmem.comm.p2pChunkSize;
-    Primitives<T, RedOp, FanAsymmetric<0, 1>, 1, Proto, 1> prims(tid, tn, nullptr, &work->sendRank, work->sendAddr,
-                                                                 nullptr,
-                                                                 /*redOpArg(ignored)=*/0, group, 1, 1, nullptr, work,
-                                                                 stepSize);
-    size_t cursor = 0;
-    do {
-      int n = min(size_t(chunkSize), bytes - cursor);
-      prims.directSend(cursor, cursor, n);
-      cursor += n;
-    } while (cursor < bytes);
-  }
-
-  template <typename Proto>
-  __device__ void runRecv(int tid, int tn, int group, struct ncclDevWorkP2p* work) {
-    size_t bytes = work->recvBytes;
-    bool useLargeChunk = (work->recvIpcReg && ncclShmem.comm.isAllNvlink) || work->recvNetReg;
-    int chunkSize = useLargeChunk ? NCCL_MAX_NET_SIZE : u32fp8Decode(work->recvChunkSize_u32fp8);
-    int stepSize = useLargeChunk ? NCCL_MAX_NET_SIZE : ncclShmem.comm.p2pChunkSize;
-    Primitives<T, RedOp, FanAsymmetric<1, 0>, 1, Proto, 1> prims(tid, tn, &work->recvRank, nullptr, nullptr,
-                                                                 work->recvAddr,
-                                                                 /*redOpArg(ignored)=*/0, group, 1, 1, nullptr, work,
-                                                                 stepSize);
-    size_t cursor = 0;
-    do {
-      int n = min(size_t(chunkSize), bytes - cursor);
-      prims.directRecv(cursor, n);
-      cursor += n;
-    } while (cursor < bytes);
-  }
 
   __device__ __forceinline__ void run() {
     const int tid = threadIdx.x;
@@ -161,16 +167,18 @@ struct RunWorkBatch<ncclFuncSendRecv, T, RedOp, NCCL_ALGO_RING, NCCL_PROTO_SIMPL
         subtid, subtn, 0, false, 1, &work->sendAddr, 1, &work->recvAddr, (ssize_t)work->sendBytes);
     } else if (isSend) {
       if (work->sendProtoLL) {
-        runSend<ProtoLL>(subtid, subtn, group, work);
+        runSend<T, RedOp, ProtoLL>(subtid, subtn, group, work);
       } else {
-        runSend<ProtoSimple<1, 1>>(subtid, subtn, group, work);
+        runSend<T, RedOp, ProtoSimple<1, 1>>(subtid, subtn, group, work);
       }
     } else {
       if (work->recvProtoLL) {
-        runRecv<ProtoLL>(subtid, subtn, group, work);
+        runRecv<T, RedOp, ProtoLL>(subtid, subtn, group, work);
       } else {
-        runRecv<ProtoSimple<1, 1>>(subtid, subtn, group, work);
+        runRecv<T, RedOp, ProtoSimple<1, 1>>(subtid, subtn, group, work);
       }
     }
   }
 };
+
+#endif // !NCCL_PRIMITIVES_STANDALONE

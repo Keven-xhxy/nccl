@@ -23,12 +23,14 @@
 #define NCCL_GRID_CONSTANT
 #endif
 
+#if !defined(NCCL_PRIMITIVES_STANDALONE)
 typedef void (*ncclDevFuncPtr_t)();
 #if defined(NCCL_OS_WINDOWS)
 /* MSVC C2133: extern array of unknown size needs a complete type; use pointer instead. */
 extern __device__ ncclDevFuncPtr_t const* ncclDevFuncTable;
 #else
 extern __device__ ncclDevFuncPtr_t const ncclDevFuncTable[];
+#endif
 #endif
 
 struct ncclShmemGroup {
@@ -69,11 +71,19 @@ struct ncclShmemData {
   } devicePlugin;
 };
 
+#if defined(NCCL_PRIMITIVES_STANDALONE)
+// The standalone primitives sample owns all shared state in one translation unit.
+__shared__ ncclShmemData ncclShmem;
+#else
 extern __shared__ ncclShmemData ncclShmem;
+#endif
 #if __CUDA_ARCH__ >= 700
 extern __shared__ ulong2 ncclShmemPerWarp[/*ncclShmemDynamicSize()/sizeof(ulong2)*/];
 #else
-extern __shared__ ulong2
+#if !defined(NCCL_PRIMITIVES_STANDALONE)
+extern
+#endif
+__shared__ ulong2
   ncclShmemPerWarp[ncclShmemScratchWarpSize() * (NCCL_MAX_NTHREADS / WARP_SIZE) / sizeof(ulong2)];
 #endif
 
@@ -136,6 +146,7 @@ inline __device__ void copyToShmem16(int tid, void* dst, void const* src, int by
   }
 }
 
+#if !defined(NCCL_PRIMITIVES_STANDALONE)
 // Must run with at least 64 threads
 __device__ __forceinline__ void loadWorkBatchToShmem(int tid, int tn, struct ncclDevKernelArgs const* args,
                                                      int batchIx) {
@@ -447,5 +458,7 @@ __device__ void ncclDevFunc_Nop();
   __device__ void ncclDevFunc_##suffix() { \
     RunWorkBatch<coll, ty, redop<ty>, algo, proto>().run(); \
   }
+
+#endif // !NCCL_PRIMITIVES_STANDALONE
 
 #endif
