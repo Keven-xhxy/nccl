@@ -4,7 +4,8 @@
 一个 block、128 个线程、单 channel、普通 P2P FIFO。
 依据当前源码与 CUDA 13.0、`ARCH=sm_80` 生成的 PTX 9.0。
 这里列的是 CUDA 内建操作和 PTX；SASS 是 NVIDIA 硬件指令，不能与 PTX 一一等同。
-没有可用 GPU，以下是静态分析，不是设备执行 trace。
+以下是静态分析，不是设备执行 trace。
+功能正确性另有 [H20 远端验证记录](validation-h20.md)。
 
 其他集合通信与 Send/Recv 的案例及指令差异见
 [collectives_simple](../../examples/collectives_simple/README.md#device-指令差异)。

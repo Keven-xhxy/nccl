@@ -122,4 +122,6 @@ make -C examples/allreduce_ring_simple test RANKS=2
 本机通过 CUDA 13.0 / sm_80 的编译、普通 Host 链接和 inspect 检查。
 PTX 行信息用于确认实际使用了原 all_reduce/prims_simple 等源码。
 未定义独立样例宏时的原头文件编译回归也已通过。
-当前无可用 GPU，1/2 rank 的通信用例返回 77（SKIP），尚未验证设备运行正确性。
+本机无可用 GPU，1/2 rank 的通信用例返回 77（SKIP）。
+随后在远端 H20 上完成 sm_90 的 1、2、3、4 rank 验证，连同其他操作共通过 2016 个用例，
+并修复了超过默认共享内存限额的启动问题，详见 [H20 验证记录](validation-h20.md)。

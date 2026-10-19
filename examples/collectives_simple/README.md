@@ -103,6 +103,8 @@ Broadcast/Reduce 的 send 与 recv 使用同一地址。
 P2P kernel 使用 256 线程：send 子组 128 线程，包含 96 个 worker，使用 barrier 15/14；
 recv 子组 128 线程，使用 barrier 13。两个子组独立运行，不能用全 block barrier
 替代原语内的分组 barrier。只有入口初始化使用全 block 同步。
+Host 会查询 kernel 的静态 shared 用量；静态 shared 与动态 scratch 合计超过设备默认
+block 限额时，按 kernel 名申请更高的动态共享内存额度，以支持 sm_90 等架构。
 
 与已有 AllReduce 一样，网络 unpack、注册缓冲区分支未启用，但部分分支仍会生成 PTX。
 编译器适配范围应检查完整对象；不能把运行时关闭等同于已从编译中裁掉。
@@ -111,4 +113,6 @@ recv 子组 128 线程，使用 barrier 13。两个子组独立运行，不能�
 
 CUDA 13.0 / sm_80 下，八个独立程序均通过编译、普通 Host 链接及静态 inspect。
 未定义独立样例宏时，四个原集合通信入口和 sendrecv 批次入口也通过编译回归。
-本机没有可用 CUDA GPU，通信运行返回 SKIP；多 GPU 结果与握手正确性仍需在设备上验证。
+本机没有可用 CUDA GPU，通信运行返回 SKIP。
+远端 H20 / CUDA 13.0 / sm_90 已完成 1、2、3、4 rank 的全部案例验证；
+连同 AllReduce 共通过 2016 个用例，详见 [H20 验证记录](../../docs/backend-port/validation-h20.md)。
