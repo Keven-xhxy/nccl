@@ -8,6 +8,10 @@
 #ifndef NCCL_DEVICE_H_
 #define NCCL_DEVICE_H_
 
+#if defined(NCCL_MINIMAL_RING_SIMPLE) && !defined(NCCL_PRIMITIVES_STANDALONE)
+#error "NCCL_MINIMAL_RING_SIMPLE is limited to standalone examples"
+#endif
+
 #include "nccl.h"
 #include "nccl_device/core.h"
 #include "nccl_tuner.h"

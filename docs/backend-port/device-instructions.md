@@ -1,11 +1,16 @@
 # 最小 AllReduce Ring/Simple 的设备指令清单
 
+本页为默认模式的说明。`MINIMAL=1` 的裁剪边界、108 种最终 PTX 助记符及全部样例验证
+见 [第一阶段说明](phase1-minimal.md)。
+
 范围：`examples/allreduce_ring_simple/allreduce.cu`，float32 / Sum，
 一个 block、128 个线程、单 channel、普通 P2P FIFO。
 依据当前源码与 CUDA 13.0、`ARCH=sm_80` 生成的 PTX 9.0。
 这里列的是 CUDA 内建操作和 PTX；SASS 是 NVIDIA 硬件指令，不能与 PTX 一一等同。
 以下是静态分析，不是设备执行 trace。
 功能正确性另有 [H20 远端验证记录](validation-h20.md)。
+包含最终全部 PTX 助记符、未执行分支及前端保留定义的审计见
+[AllReduce device 完整编译依赖](allreduce-cuda-interfaces.md)，附两架构的逐项模块/作用表和原始 asm 清单。
 
 其他集合通信与 Send/Recv 的案例及指令差异见
 [collectives_simple](../../examples/collectives_simple/README.md#device-指令差异)。

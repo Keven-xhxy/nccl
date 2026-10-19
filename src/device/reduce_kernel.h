@@ -1253,7 +1253,7 @@ struct Apply_LoadMultimem {
   }
 };
 
-#if __CUDA_ARCH__ >= 900 && CUDART_VERSION >= 12010
+#if !defined(NCCL_MINIMAL_RING_SIMPLE) && __CUDA_ARCH__ >= 900 && CUDART_VERSION >= 12010
 template <typename Fn>
 struct LoadMultimem_BigPackSize {
   using T = typename Fn::EltType;

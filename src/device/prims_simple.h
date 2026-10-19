@@ -5,7 +5,9 @@
  * See LICENSE.txt for more license information
  *************************************************************************/
 
+#if !defined(NCCL_MINIMAL_RING_SIMPLE)
 #include "network/unpack/unpack.h"
+#endif
 #include <cassert>
 
 enum primsMode {
@@ -24,6 +26,12 @@ class Primitives<T, RedOp, Fan, Direct, ProtoSimple<SlicePerChunk, StepPerSlice,
                        RolePostSend = 0x10, RolePostRecv = 0x20, Aborted = 0x40, NetRegMode = 0x80,
                        ConnFifoEnabled = 0x100, DirectWrite = 0x200, DirectRead = 0x400, PatMode = 0x800,
                        NvlsMinPolling = 0x1000, NetDeviceUnpack = 0x2000, AnyNetDeviceUnpack = 0x4000;
+#if defined(NCCL_MINIMAL_RING_SIMPLE)
+  // P2P transports float payloads as bytes, without applying a reduction.
+  static_assert((std::is_same<T, float>::value || (P2p && sizeof(T) == 1)) &&
+                  std::is_same<RedOp, FuncSum<T>>::value && MultimemSrcs == 0 && MultimemDsts == 0 && !isNetOffload,
+                "Minimal mode supports float/Sum Simple collectives and byte P2P without multimem/offload");
+#endif
   const int tid, tidInBlock;
   const int nthreads;
   int nworkers;
@@ -82,7 +90,7 @@ class Primitives<T, RedOp, Fan, Direct, ProtoSimple<SlicePerChunk, StepPerSlice,
   }
 
   inline __device__ uint64_t loadStepValue(uint64_t* ptr) {
-#if __CUDA_ARCH__ >= 900 && CUDART_VERSION >= 12010
+#if !defined(NCCL_MINIMAL_RING_SIMPLE) && __CUDA_ARCH__ >= 900 && CUDART_VERSION >= 12010
     if (flags & NvlsMinPolling) {
       uint64_t ans;
       asm volatile("multimem.ld_reduce.acquire.sys.global.min.u64 %0, [%1];"
@@ -154,9 +162,11 @@ class Primitives<T, RedOp, Fan, Direct, ProtoSimple<SlicePerChunk, StepPerSlice,
         // coverity[dead_error_line]
         ptrs[index] = connEltsFifo + (step % NCCL_STEPS) * connStepSize;
       }
+#if !defined(NCCL_MINIMAL_RING_SIMPLE)
       if (flags & NetDeviceUnpack) {
         ncclNetDeviceIncrementHead(group, index);
       }
+#endif
       step += StepPerSlice;
     }
   }
@@ -228,6 +238,7 @@ class Primitives<T, RedOp, Fan, Direct, ProtoSimple<SlicePerChunk, StepPerSlice,
         /* if user abort the kernel, we don't need to actually perform copy/reduce; just set size
          * to 0 to avoid unnecessary workload. */
         int workSize = ncclShmem.aborted ? 0 : sliceSize;
+#if !defined(NCCL_MINIMAL_RING_SIMPLE)
         if (flags & AnyNetDeviceUnpack) {
           ncclNetDeviceUnpack<Recv>(tid, tidInBlock, nworkers, group,
                                     ncclShmem.groups[group].devicePlugin.unpack.unpackNetDeviceIndexMask, Src,
@@ -235,6 +246,7 @@ class Primitives<T, RedOp, Fan, Direct, ProtoSimple<SlicePerChunk, StepPerSlice,
           // Sync here to make sure all workers are reading from the updated srcs)
           subBarrier();
         }
+#endif
 
         if (DirectRecv &&
             ncclShmem.groups[group].srcs[0] == ncclShmem.groups[group].dsts[0]
@@ -473,6 +485,7 @@ private:
   __device__ __forceinline__ void loadRecvConn(ncclDevChannelPeer* peer, int connIndex, uint32_t direct, int ipcRegFlag,
                                                int netRegFlag) {
     conn = &peer->recv[connIndex];
+#if !defined(NCCL_MINIMAL_RING_SIMPLE)
     if (conn->netDeviceHandle.netDeviceType == NCCL_NET_DEVICE_UNPACK) {
       // handle must be a device ptr
       netDeviceHandle = conn->netDeviceHandle.handle;
@@ -480,6 +493,7 @@ private:
       ncclNetDeviceUnpackSetup(netDeviceHandle, group, index);
       flags |= NetDeviceUnpack;
     }
+#endif
     step = conn->step;
     step = roundUp(step, SlicePerChunk * StepPerSlice);
     if (flags & RolePostRecv) {
@@ -658,6 +672,7 @@ public:
       setDataPtrs(inputBuf, outputBuf, redOpArg, (struct ncclDevWorkCollReg*)collWork, sendIpcReg || recvIpcReg, peer);
       // coverity[uninit_member] => coverity thinks fan.n is not initialized
 
+#if !defined(NCCL_MINIMAL_RING_SIMPLE)
       if (barrierAny(flags & NetDeviceUnpack)) {
         flags |= AnyNetDeviceUnpack;
         // RoleWaitRecv starts at tid=0, so this creates the bitmask of which recv peers
@@ -667,6 +682,10 @@ public:
           ncclShmem.groups[this->group].devicePlugin.unpack.unpackNetDeviceIndexMask = mask;
         }
       }
+#else
+      // Publish setDataPtrs/connection state just as the original block-wide vote did.
+      barrier();
+#endif
     } else if (mode == primsModePatRs || mode == primsModePatAg) {
       // Connect to all ranks +/- 2^n
       flags |= PatMode;
@@ -724,9 +743,11 @@ public:
       }
     }
 
+#if !defined(NCCL_MINIMAL_RING_SIMPLE)
     if (flags & NetDeviceUnpack) {
       ncclNetDeviceSaveHead(netDeviceHandle, group, index);
     }
+#endif
 
     // Make sure all threads are done writing back conn->step and done using
     // ncclShmem.groups[group]

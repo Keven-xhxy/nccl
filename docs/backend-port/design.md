@@ -1,7 +1,12 @@
 # 最小 AllReduce Ring/Simple：复用原 runRing 和 primitives
 
+第一阶段已增加覆盖全部现有样例的可选 `MINIMAL=1` 局部裁剪，
+排除网络 unpack 实现和 NVLS/multimem，见 [第一阶段说明与验证](phase1-minimal.md)。
+
 设备调用链的 CUDA 内建操作、PTX 指令及适配边界见
 [设备指令清单](device-instructions.md)。
+device 端全部 PTX、CUDA 内建引用和未裁剪定义的模块/作用见
+[AllReduce device 完整编译依赖](allreduce-cuda-interfaces.md)。
 
 其他集合通信与 Send/Recv 的同标准最小案例见
 [collectives_simple](../../examples/collectives_simple/README.md)，包括 Broadcast、Reduce、
@@ -52,7 +57,8 @@ Host 不做拓扑选择。一个 channel 对应 `channelLo=channelHi=0`，所有
 连接 flags 为 0，没有注册用户缓冲区；上述 direct* 方法进入原有 FIFO fallback。
 收发角色划分、额外 post warp、barrier、等待 credit/data、slice/step 更新、
 向量复制和归约、内存 fence 都使用原 NCCL 实现。
-没有修改 `prims_simple.h`、`common_kernel.h`、`reduce_kernel.h` 或 `op128.h`。
+原始样例直接复用这些实现；第一阶段仅在 `prims_simple.h`、`reduce_kernel.h`、`op128.h`
+增加排除 unpack/multimem 的局部条件，没有复制或重写数据流程。`common_kernel.h` 未修改。
 
 Host 在首次启动前完成所有 GPU 的连接初始化和输入拷贝，再启动所有 GPU，
 最后等待结果。FIFO 与连接状态只初始化一次，后续调用复用它们；

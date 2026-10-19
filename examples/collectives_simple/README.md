@@ -1,5 +1,14 @@
 # 最小 Simple 集合通信与 Send/Recv 案例
 
+可选 `MINIMAL=1` 会在全部案例中编译排除网络 unpack 实现和 NVLS/multimem，
+默认 `MINIMAL=0` 保留原路径。两模式在 H20 上各通过 2016 个用例，详见
+[第一阶段说明](../../docs/backend-port/phase1-minimal.md)。
+
+```bash
+make -C examples/collectives_simple all inspect-all MINIMAL=1 ARCH=sm_90 -j2
+make -C examples/collectives_simple test-matrix MINIMAL=1 ARCH=sm_90
+```
+
 与 [AllReduce 样例](../allreduce_ring_simple/allreduce.cu) 使用同一标准：
 一个 `.cu`、按操作单独编译、Host 直接调用具名 kernel、`-rdc=false`，
 普通 `g++ + libcudart` 链接。没有 libnccl 依赖、device Python 生成器、
@@ -106,7 +115,8 @@ recv 子组 128 线程，使用 barrier 13。两个子组独立运行，不能�
 Host 会查询 kernel 的静态 shared 用量；静态 shared 与动态 scratch 合计超过设备默认
 block 限额时，按 kernel 名申请更高的动态共享内存额度，以支持 sm_90 等架构。
 
-与已有 AllReduce 一样，网络 unpack、注册缓冲区分支未启用，但部分分支仍会生成 PTX。
+默认模式与已有 AllReduce 一样，网络 unpack、注册缓冲区分支未启用，但部分分支仍会生成 PTX。
+`MINIMAL=1` 会排除 unpack 实现与 multimem；注册缓冲区等其他分支暂时保留。
 编译器适配范围应检查完整对象；不能把运行时关闭等同于已从编译中裁掉。
 
 ## 本机验证状态

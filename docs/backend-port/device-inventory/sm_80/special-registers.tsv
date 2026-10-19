@@ -1,0 +1,3 @@
+register	sources
+%ntid.x	examples/allreduce_ring_simple/allreduce.cu:39; examples/allreduce_ring_simple/allreduce.cu:51
+%tid.x	examples/allreduce_ring_simple/allreduce.cu:35

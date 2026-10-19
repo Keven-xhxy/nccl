@@ -1,0 +1,74 @@
+{
+  "default_sm80": {
+    "ptx_version": "9.0",
+    "target": "sm_80",
+    "entries": [
+      "_Z21allreduce_ring_simple14ncclKernelComm14ncclDevChannel15ncclDevWorkColl"
+    ],
+    "device_externs": [
+      "__assertfail"
+    ],
+    "device_reference_names": 57,
+    "inline_asm_blocks": 75,
+    "ptx_opcode_names": 135,
+    "static_ptx_instructions": 8924,
+    "input_sha256": {
+      "allreduce.cpp1.ii": "974fa755b708e870917f0b3928fe7def2c6e8072d0e6c15fab8334b8b1a417e1",
+      "allreduce.ptx": "ff13fe1497140541d1eeade284d518ac199eadf4c0130471ed100fc799bc48c5"
+    }
+  },
+  "default_sm90": {
+    "ptx_version": "9.0",
+    "target": "sm_90",
+    "entries": [
+      "_Z21allreduce_ring_simple14ncclKernelComm14ncclDevChannel15ncclDevWorkColl"
+    ],
+    "device_externs": [
+      "__assertfail"
+    ],
+    "device_reference_names": 62,
+    "inline_asm_blocks": 108,
+    "ptx_opcode_names": 136,
+    "static_ptx_instructions": 8988,
+    "input_sha256": {
+      "allreduce.cpp1.ii": "aacbe9330902f7aaf442c0b56d0b6af3020356c4cc804cc61d753d5c682a84d6",
+      "allreduce.ptx": "93ef461a29f994b7ed05161e12fed3d5a81b062c61d5c17f069148aa17ed4937"
+    }
+  },
+  "minimal_sm80": {
+    "ptx_version": "9.0",
+    "target": "sm_80",
+    "entries": [
+      "_Z21allreduce_ring_simple14ncclKernelComm14ncclDevChannel15ncclDevWorkColl"
+    ],
+    "device_externs": [
+      "__assertfail"
+    ],
+    "device_reference_names": 56,
+    "inline_asm_blocks": 74,
+    "ptx_opcode_names": 108,
+    "static_ptx_instructions": 5611,
+    "input_sha256": {
+      "allreduce.cpp1.ii": "a3c580932cdfa4654b9786a77693512085be964da9b3c0b348b519577ba43591",
+      "allreduce.ptx": "358bd745dcbb6062366fd2ebac23f6a9e8a6b7786c5b3b5c8d696b84db82a3dd"
+    }
+  },
+  "minimal_sm90": {
+    "ptx_version": "9.0",
+    "target": "sm_90",
+    "entries": [
+      "_Z21allreduce_ring_simple14ncclKernelComm14ncclDevChannel15ncclDevWorkColl"
+    ],
+    "device_externs": [
+      "__assertfail"
+    ],
+    "device_reference_names": 61,
+    "inline_asm_blocks": 74,
+    "ptx_opcode_names": 108,
+    "static_ptx_instructions": 5603,
+    "input_sha256": {
+      "allreduce.cpp1.ii": "f62e17d8a919fc869085c861577906d46884f3924b43e3b65693ce49af084847",
+      "allreduce.ptx": "be9ab797646693c320a2dd27b1b8e03ed3fbf49577b854eaf9749e23999d16a6"
+    }
+  }
+}

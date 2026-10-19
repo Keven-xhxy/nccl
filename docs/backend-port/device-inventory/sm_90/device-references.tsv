@@ -1,0 +1,63 @@
+symbol	sources
+__activemask	src/include/nccl_device/coop.h:225
+__all_sync	src/device/common_kernel.h:227
+__any_sync	src/device/prims_simple.h:69; src/device/prims_simple.h:77
+__assert_fail	src/device/prims_simple.h:605
+__ballot_sync	src/device/prims_simple.h:665
+__barrier_sync_count	src/include/nccl_device/coop.h:150
+__bfloat1622float2	src/device/reduce_kernel.h:270
+__brev	src/include/bitops.h:452
+__brevll	src/include/bitops.h:454
+__builtin_bswap16	src/include/bitops.h:373
+__builtin_bswap32	src/include/bitops.h:376
+__builtin_bswap64	src/include/bitops.h:379
+__builtin_unreachable	src/include/nccl_device/utility.h:370; src/include/nccl_device/utility.h:392
+__byte_perm	src/device/reduce_kernel.h:367; src/device/reduce_kernel.h:387; src/device/reduce_kernel.h:406
+__clz	src/include/bitops.h:297; src/include/bitops.h:330; src/include/bitops.h:473
+__clzll	src/include/bitops.h:300; src/include/bitops.h:333
+__cvta_generic_to_global	src/device/op128.h:69
+__cvta_generic_to_shared	src/device/common.h:144; src/device/op128.h:65
+__ffs	src/device/network/unpack/unpack.h:192; src/include/bitops.h:264; src/include/collectives.h:482; src/include/collectives.h:745; src/include/nccl_device/coop.h:261
+__ffsll	src/include/bitops.h:266
+__float22bfloat162_rn	src/device/reduce_kernel.h:276
+__float22half2_rn	src/device/reduce_kernel.h:262
+__float2half_rn	src/device/reduce_kernel.h:249
+__fns	src/include/nccl_device/coop.h:261
+__funnelshift_r	src/device/op128.h:474; src/device/op128.h:50; src/device/op128.h:550; src/device/op128.h:551; src/device/op128.h:552; src/device/op128.h:553
+__hadd	src/device/reduce_kernel.h:426; src/device/reduce_kernel.h:451; src/device/reduce_kernel.h:472; src/device/reduce_kernel.h:481
+__hadd2	src/device/reduce_kernel.h:430; src/device/reduce_kernel.h:453; src/device/reduce_kernel.h:473; src/device/reduce_kernel.h:482
+__half	src/device/reduce_kernel.h:1052; src/device/reduce_kernel.h:1069; src/device/reduce_kernel.h:472; src/device/reduce_kernel.h:474; src/device/reduce_kernel.h:476; src/device/reduce_kernel.h:481; src/device/reduce_kernel.h:483; src/device/reduce_kernel.h:485; src/device/reduce_kernel.h:674; src/device/reduce_kernel.h:689; src/device/reduce_kernel.h:776; src/device/reduce_kernel.h:793; src/device/reduce_kernel.h:914; src/device/reduce_kernel.h:929
+__half2	src/device/reduce_kernel.h:1060; src/device/reduce_kernel.h:1077; src/device/reduce_kernel.h:473; src/device/reduce_kernel.h:475; src/device/reduce_kernel.h:478; src/device/reduce_kernel.h:482; src/device/reduce_kernel.h:484; src/device/reduce_kernel.h:487; src/device/reduce_kernel.h:784; src/device/reduce_kernel.h:801
+__half22float2	src/device/reduce_kernel.h:256
+__half2float	src/device/reduce_kernel.h:243
+__hmax	src/device/reduce_kernel.h:440; src/device/reduce_kernel.h:457; src/device/reduce_kernel.h:476; src/device/reduce_kernel.h:485
+__hmax2	src/device/reduce_kernel.h:442; src/device/reduce_kernel.h:459; src/device/reduce_kernel.h:478; src/device/reduce_kernel.h:487
+__hmin	src/device/reduce_kernel.h:440; src/device/reduce_kernel.h:457; src/device/reduce_kernel.h:476; src/device/reduce_kernel.h:485
+__hmin2	src/device/reduce_kernel.h:442; src/device/reduce_kernel.h:459; src/device/reduce_kernel.h:478; src/device/reduce_kernel.h:487
+__hmul	src/device/reduce_kernel.h:1004; src/device/reduce_kernel.h:1028; src/device/reduce_kernel.h:1052; src/device/reduce_kernel.h:1069; src/device/reduce_kernel.h:431; src/device/reduce_kernel.h:454; src/device/reduce_kernel.h:474; src/device/reduce_kernel.h:483; src/device/reduce_kernel.h:722; src/device/reduce_kernel.h:748; src/device/reduce_kernel.h:776; src/device/reduce_kernel.h:793
+__hmul2	src/device/reduce_kernel.h:1017; src/device/reduce_kernel.h:1040; src/device/reduce_kernel.h:1060; src/device/reduce_kernel.h:1077; src/device/reduce_kernel.h:433; src/device/reduce_kernel.h:456; src/device/reduce_kernel.h:475; src/device/reduce_kernel.h:484; src/device/reduce_kernel.h:733; src/device/reduce_kernel.h:760; src/device/reduce_kernel.h:784; src/device/reduce_kernel.h:801
+__ldg	src/include/nccl_device/utility.h:144; src/include/nccl_device/utility.h:419; src/include/nccl_device/utility.h:426; src/include/nccl_device/utility.h:433; src/include/nccl_device/utility.h:440; src/include/nccl_device/utility.h:448
+__nv_cvt_fp8_to_halfraw	src/device/reduce_kernel.h:674; src/device/reduce_kernel.h:689; src/device/reduce_kernel.h:914; src/device/reduce_kernel.h:929
+__nv_fp8_e4m3	src/device/reduce_kernel.h:1052; src/device/reduce_kernel.h:472; src/device/reduce_kernel.h:474; src/device/reduce_kernel.h:476; src/device/reduce_kernel.h:776
+__nv_fp8_e5m2	src/device/reduce_kernel.h:1069; src/device/reduce_kernel.h:481; src/device/reduce_kernel.h:483; src/device/reduce_kernel.h:485; src/device/reduce_kernel.h:793
+__nv_fp8x2_e4m3	src/device/reduce_kernel.h:1060; src/device/reduce_kernel.h:299; src/device/reduce_kernel.h:473; src/device/reduce_kernel.h:475; src/device/reduce_kernel.h:478; src/device/reduce_kernel.h:784
+__nv_fp8x2_e5m2	src/device/reduce_kernel.h:1077; src/device/reduce_kernel.h:296; src/device/reduce_kernel.h:482; src/device/reduce_kernel.h:484; src/device/reduce_kernel.h:487; src/device/reduce_kernel.h:801
+__nv_fp8x4_e4m3	src/device/reduce_kernel.h:300
+__nv_fp8x4_e5m2	src/device/reduce_kernel.h:297
+__popc	src/include/bitops.h:237; src/include/collectives.h:508; src/include/nccl_device/coop.h:115; src/include/nccl_device/coop.h:118; src/include/nccl_device/coop.h:121
+__popcll	src/include/bitops.h:239
+__shfl_sync	src/include/nccl_device/coop.h:255; src/include/nccl_device/coop.h:269
+__syncthreads	examples/allreduce_ring_simple/allreduce.cu:50; src/include/nccl_device/coop.h:167
+__syncwarp	src/device/network/unpack/unpack.h:228; src/device/network/unpack/unpack.h:258; src/device/network/unpack/unpack.h:300; src/device/prims_simple.h:48; src/device/prims_simple.h:55; src/include/nccl_device/coop.h:124; src/include/nccl_device/coop.h:98
+__trap	src/device/common_kernel.h:38; src/device/reduce_kernel.h:1251
+__umul64hi	src/device/reduce_kernel.h:959; src/include/bitops.h:155; src/include/nccl_device/utility.h:236
+__umulhi	src/device/reduce_kernel.h:959; src/include/bitops.h:148; src/include/nccl_device/utility.h:229
+cuda::atomic_ref	src/include/collectives.h:692; src/include/collectives.h:916; src/include/nccl_device/utility.h:107; src/include/nccl_device/utility.h:362; src/include/nccl_device/utility.h:364; src/include/nccl_device/utility.h:366; src/include/nccl_device/utility.h:368; src/include/nccl_device/utility.h:380; src/include/nccl_device/utility.h:383; src/include/nccl_device/utility.h:386; src/include/nccl_device/utility.h:389
+cuda::memory_order_acq_rel	src/include/nccl_device/utility.h:347; src/include/nccl_device/utility.h:352
+cuda::memory_order_acquire	src/include/nccl_device/utility.h:347; src/include/nccl_device/utility.h:351
+cuda::memory_order_relaxed	src/include/nccl_device/utility.h:107; src/include/nccl_device/utility.h:346; src/include/nccl_device/utility.h:351
+cuda::memory_order_release	src/include/collectives.h:693; src/include/collectives.h:917; src/include/nccl_device/utility.h:346; src/include/nccl_device/utility.h:352
+cuda::thread_scope_block	src/include/collectives.h:692; src/include/collectives.h:916; src/include/nccl_device/utility.h:363; src/include/nccl_device/utility.h:364; src/include/nccl_device/utility.h:382; src/include/nccl_device/utility.h:383
+cuda::thread_scope_device	src/include/nccl_device/utility.h:365; src/include/nccl_device/utility.h:366; src/include/nccl_device/utility.h:385; src/include/nccl_device/utility.h:386
+cuda::thread_scope_system	src/include/nccl_device/utility.h:367; src/include/nccl_device/utility.h:368; src/include/nccl_device/utility.h:388; src/include/nccl_device/utility.h:389
+cuda::thread_scope_thread	src/include/nccl_device/utility.h:361; src/include/nccl_device/utility.h:362; src/include/nccl_device/utility.h:379; src/include/nccl_device/utility.h:380

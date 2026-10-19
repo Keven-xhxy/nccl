@@ -411,7 +411,7 @@ __device__ __forceinline__ void fence_acq_rel_gpu() {
 template <int Size>
 __device__ __forceinline__ void multimem_st_global(uintptr_t addr, BytePack<Size> val);
 
-#if __CUDA_ARCH__ >= 900 && CUDART_VERSION >= 12010
+#if !defined(NCCL_MINIMAL_RING_SIMPLE) && __CUDA_ARCH__ >= 900 && CUDART_VERSION >= 12010
 template <>
 __device__ __forceinline__ void multimem_st_global<0>(uintptr_t addr, BytePack<0> val) {
   // nop

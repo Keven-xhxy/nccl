@@ -1,0 +1,38 @@
+{
+  "sm_80": {
+    "ptx_version": "9.0",
+    "target": "sm_80",
+    "entries": [
+      "_Z21allreduce_ring_simple14ncclKernelComm14ncclDevChannel15ncclDevWorkColl"
+    ],
+    "device_externs": [
+      "__assertfail"
+    ],
+    "device_reference_names": 57,
+    "inline_asm_blocks": 75,
+    "ptx_opcode_names": 135,
+    "static_ptx_instructions": 8924,
+    "input_sha256": {
+      "allreduce.cpp1.ii": "aaed855a044d0e5430a3c4cea1c3d142dd953807d28b44512880f565bfa0fda4",
+      "allreduce.ptx": "2fabed9e9b95ef19d0d3dd2f39153f38311587de1039efc442fc76111e813996"
+    }
+  },
+  "sm_90": {
+    "ptx_version": "9.0",
+    "target": "sm_90",
+    "entries": [
+      "_Z21allreduce_ring_simple14ncclKernelComm14ncclDevChannel15ncclDevWorkColl"
+    ],
+    "device_externs": [
+      "__assertfail"
+    ],
+    "device_reference_names": 62,
+    "inline_asm_blocks": 108,
+    "ptx_opcode_names": 136,
+    "static_ptx_instructions": 8988,
+    "input_sha256": {
+      "allreduce.cpp1.ii": "e46aa0fbed359c6eb9f6e5105f3ffd2236a349ec7945f107ff24f309b8d36565",
+      "allreduce.ptx": "bfbb8836d9e16b3aac8b1d6f495278eea2e7cc9cfb937a39c396b8be33537849"
+    }
+  }
+}
